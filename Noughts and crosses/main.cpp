@@ -22,6 +22,8 @@ string grid[3][3];
 string P1Name = "Player 1";
 string P2Name = "Player 2";
 
+char key = ' ';
+
 string Winner = "";
 //only used to select menu or game 
 int selection = 0;
@@ -35,6 +37,8 @@ public:
 	//defines marker and _player
 	string marker;
 	string _player;
+
+	int AIPlace;
 	Game(){
 
 		//player 1
@@ -48,6 +52,12 @@ public:
 		{
 			marker = "o";
 			_player = P2Name;
+
+			if (aiEnabled)
+			{
+				key = (rand() % 9 + 1) + '0';
+			}
+
 		}
 		
 	}
@@ -60,11 +70,12 @@ void GameReset()
 {
 	Game Game;
 
+	//loops through grid replacing each section in the grid to its original value (numbers 1-9)
 	for (int x = 0; x <= 2; x++)
 	{
 		for (int y = 0; y <= 2; y++)
 		{
-				//calls player.marker to get the correct marker ("x" or "o")
+				
 			grid[x][y] = Game.grid[x][y];
 
 		}
@@ -76,23 +87,55 @@ void GameReset()
 //this only holds the grid
 void Pgrid()
 {
-	printf(" %s | %s | %s\n---+---+---\n %s | %s | %s\n---+---+---\n %s | %s | %s\n\n\n", grid[0][0].c_str(), grid[1][0].c_str(), grid[2][0].c_str(), grid[0][1].c_str(), grid[1][1].c_str(), grid[2][1].c_str(), grid[0][2].c_str(), grid[1][2].c_str(), grid[2][2].c_str());
+	for (int x = 0; x < 3; x++)
+	{
+		for (int y = 0; y < 3; y++)
+		{
+			if (grid[x][y] == "x")
+			{
+				printf("\033[32m%s\033[0m", grid[x][y].c_str());
+			}
+			else if (grid[x][y] == "o")
+			{
+				printf("\033[31m%s\033[0m", grid[x][y].c_str());
+			}
+			else
+			{
+				printf("%s", grid[x][y].c_str());
+			}
+			if (y < 2) { printf(" | "); }
+		}
+		if (x < 2) { printf("\n---+---+---\n"); }
+	}
+	printf("\n\n\n");
+
 };
 void game()
 {
+	//clears screen
 	cls;
+	//defines the class "Game"
 	Game Game;
 
-	cout << "";
+
 	
 	//grid 
 	Pgrid();
 	printf("%s's", Game._player.c_str());
-	//gets pressed key
-	char key = _getch();
+	
+	//conditions to check if it is the ai's turn(if enabled)
+	if (aiEnabled == true && turn)
+	{
+		Game.AIPlace;
+	}
+	else
+	{
+		key = _getch();
+	}
+	
 	//converts value from key from char to string to be used for finding number in grid
 	string str(1,key);
-
+	cout << "\n" << str.c_str() << "\n";
 
 	bool invalidplacement = true;
 	//loops through grid to find correct number and replaces number with players marker
@@ -109,7 +152,7 @@ void game()
 			}
 		}
 	}
-	if(invalidplacement == true)
+	if(invalidplacement == true && !turn || invalidplacement == true && !aiEnabled)
 	{
 		cout << "Select an available grid.\n";
 		_getch();
@@ -142,13 +185,13 @@ void game()
 		gamestate = false;
 		Winner = "Winner: " + P1Name;
 	}
-	if (grid[0][2] == "o" && grid[1][1] == "o" && grid[2][0] == "o") {
-		gamestate = false;
-		Winner = "Winner: " + P2Name;
-	}
-	if (grid[0][0] == "x" && grid[1][1] == "x" && grid[2][2] == "x") {
+	if (grid[0][2] == "x" && grid[1][1] == "x" && grid[2][0] == "x") {
 		gamestate = false;
 		Winner = "Winner: " + P1Name;
+	}
+	if (grid[0][0] == "o" && grid[1][1] == "o" && grid[2][2] == "o") {
+		gamestate = false;
+		Winner = "Winner: " + P2Name;
 	}
 	if (grid[0][2] == "o" && grid[1][1] == "o" && grid[2][0] == "o") {
 		gamestate = false;
